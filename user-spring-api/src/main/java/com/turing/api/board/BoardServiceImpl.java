@@ -12,7 +12,4 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository repository;
 
 
-
-
-
 }

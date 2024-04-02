@@ -10,24 +10,29 @@ import lombok.*;
 @ToString(exclude = {"id"})
 @Entity(name = "boards")
 public class Board {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "board_id")
-    private long id;
+    private Long id;
 
+    @Column(name = "board_name")
     private String boardName;
-    private String boardType;
 
+    @Column(name = "board_type")
+    private String boardType;
 
     @OneToMany(mappedBy = "board")
     private List<Article> articles;
 
-    @Builder(builderMethodName = "builder")
-    public Board(long id, String boardName, String boardType) {
+
+    @Builder(builderClassName =  "builer")
+    public Board(long id, String boardName, String boardType
+    // ,List<Article> articles
+    ){
         this.id = id;
         this.boardName = boardName;
         this.boardType = boardType;
+        // this.articles = articles;
     }
 
 

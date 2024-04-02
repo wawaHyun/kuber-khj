@@ -1,5 +1,8 @@
 package com.turing.api.user;
 
+import com.turing.api.article.Article;
+import com.turing.api.article.ArticleRepository;
+import com.turing.api.article.ArticleServiceImpl;
 import com.turing.api.enums.Messenger;
 import com.turing.api.proxy.TypeProxy;
 import lombok.RequiredArgsConstructor;
@@ -12,117 +15,47 @@ import java.util.*;
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
-    private final UserService service;
-    private final UserRepository repository;
+    
+    private final UserService ser;
+    private final UserRepository repo;
 
-    @PostMapping("/api/login")
-    public Map<String, ?> login(@RequestBody Map<?, ?> paramap) {
-        Map<String, Messenger> response = new HashMap<>();
-        String username = (String)paramap.get("username");
+    @PostMapping(path = "/api/join")
+    public Map<String, ?> join(@RequestBody Map<?, ?>requMap)  {
+        System.out.println("join 들어옴");
 
-        User user = repository.findByUsername(username).orElse(null);
+        @SuppressWarnings("null")
+        User newmem = repo.save(User.builder()
+        .username((String)requMap.get("memId"))
+        .password((String) requMap.get("memPw"))
+        .name((String) requMap.get("name"))
+        .phone((String) requMap.get("phone"))
+        .job((String) requMap.get("job"))
+        .height(Double.parseDouble((String)requMap.get("height")))
+        .weight(Double.parseDouble((String)requMap.get("weight")))
+        .build());
 
-         response.put("로그인성공여부" , user==null ?
-                 Messenger.FAIL : user.getPassword().equals(paramap.get("password")) ?
-                 Messenger.SUCCESS : Messenger.WRONG_PASSWORD);
+        System.out.println("Db에 저장된 정보 "+newmem);
+        Map<String, Messenger> resMap = new HashMap<>();
+        resMap.put("messenge",Messenger.SUCCESS);
 
-        return response;
-    }   
-
-    @PostMapping(path = "/api/users")
-    public Map<String, ?> join(@RequestBody Map<String, ?> paramap) {
-        System.out.println("입력받은 아이디 : " + paramap.get("username"));
-
-        User user = repository.save(User.builder()
-                .username((String) paramap.get("username"))
-                .password((String) paramap.get("password"))
-                .name((String) paramap.get("name"))
-                .job((String) paramap.get("job"))
-                .phone((String) paramap.get("phone"))
-                .height(TypeProxy.doubleOf.apply((String)paramap.get("height")))
-                .weight(TypeProxy.doubleOf.apply((String)paramap.get("weight")))
-                .build());
-
-        System.out.println("DB에 저장된 User 정보 : " + user);
-        Map<String, Messenger> map = new HashMap<>();
-        map.put("result", Messenger.SUCCESS);
-
-        return map;
+        return resMap;
     }
 
 
-    public Map<String, ?> findUserBYId(@RequestBody Map<?, ?> paramap) {
-        Map<String, String> response = new HashMap<>();
 
-        return response;
-    }
+    @PostMapping(path ="/api/login")
+    public Map<String, ?> login(@RequestBody Map<String, ?>paraMap) throws SQLException {
+        Map<String, Messenger> resMap = new HashMap<>();
+        Optional<User> mem = repo.findByUsername((String)paraMap.get("memid"));
 
-    public Map<String, ?> addUsers() {
-        Map<String, String> response = new HashMap<>();
-        return response;
-    }
+        if(mem.isEmpty()){resMap.put("Messenge",Messenger.FAIL);return resMap;}
 
-
-    public Map<String, ?> updatePassword(@RequestBody Map<?, ?> paramap) {
-        Map<String, String> response = new HashMap<>();
-        return response;
-    }
-
-    public Map<String, ?> deleteUser(@RequestBody Map<?, ?> paramap) {
-        Map<String, String> response = new HashMap<>();
-
-        return response;
-    }
-
-    public Map<String, ?> getUserList() {
-        Map<String, String> response = new HashMap<>();
-
-        return response;
-    }
-
-    public Map<String, ?> findUserByName(@RequestBody Map<?, ?> paramap) {
-        Map<String, String> response = new HashMap<>();
-        return response;
-
+        resMap.put("Messenge",mem.get().getPassword().equals(paraMap.get("password")) ?
+        Messenger.SUCCESS : Messenger.WRONG_PASSWORD);
+        return resMap;    
     }
 
 
-    public Map<String, ?> findUserByJob(@RequestBody Map<?, ?> paramap) {
-        Map<String, String> response = new HashMap<>();
-        return response;
-    }
-
-    public Map<String, ?> countUser() {
-        Map<String, String> response = new HashMap<>();
-        return response;
-    }
-
-    public Map<String, ?> getOne(@RequestBody Map<?, ?> paramap) throws SQLException {
-        Map<String, String> response = new HashMap<>();
-        return response;
-    }
-
-    public Map<String, ?> findUsers() throws SQLException {
-        Map<String, String> response = new HashMap<>();
-
-        return response;
-    }
-
-    public Map<String, ?> getUser(@RequestBody Map<?, ?> paramap) throws SQLException {
-        Map<String, String> response = new HashMap<>();
-
-        return response;
-    }
-
-    public Map<String, ?> touchTable() throws SQLException {
-        Map<String, String> response = new HashMap<>();
-        return response;
-    }
-
-    public Map<String, ?> removeTable() throws SQLException {
-        Map<String, String> response = new HashMap<>();
-        return response;
-    }
 
 
 }
